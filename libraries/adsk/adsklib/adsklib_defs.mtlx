@@ -26,8 +26,9 @@
    </nodedef>
 
    <!-- Autodesk bitmap (color3) -->
-   <nodedef name="ND_adsk_bitmap_color3" node="bitmap" nodegroup="texture2d">
-      <parameter name="file" type="filename" namespace="adsk"/>
+   <nodedef name="ND_adsk_bitmap_color3" node="bitmap" nodegroup="texture2d"
+          version="1.0" isdefaultversion="true" namespace="adsk">            
+      <parameter name="file" type="filename" />
       <!--  inputs with unit -->
       <input name="realworld_offset" type="vector2" unittype="distance" />
       <input name="realworld_scale" type="vector2" unittype="distance"/>
@@ -45,8 +46,9 @@
    </nodedef>
 
    <!-- Autodesk bitmap (float) -->
-   <nodedef name="ND_adsk_bitmap_float" node="bitmap" nodegroup="texture2d">
-      <parameter name="file" type="filename" namespace="adsk"/>
+   <nodedef name="ND_adsk_bitmap_float" node="bitmap" nodegroup="texture2d"
+          version="1.0" isdefaultversion="true" namespace="adsk">            
+      <parameter name="file" type="filename"/>
       <!--  inputs with unit -->
       <input name="realworld_offset" type="vector2" unittype="distance" />
       <input name="realworld_scale" type="vector2" unittype="distance"/>
@@ -62,8 +64,9 @@
       <output name="out" type="float" />
    </nodedef>
 
-   <nodedef name="ND_adsk_bitmap_remap_float" node="bitmap_remap" nodegroup="texture2d">
-      <parameter name="file" type="filename" namespace="adsk"/>
+   <nodedef name="ND_adsk_bitmap_remap_float" node="bitmap_remap" nodegroup="texture2d"
+          version="1.0" isdefaultversion="true" namespace="adsk">                        
+      <parameter name="file" type="filename" />
       <!--  inputs with unit -->
       <input name="realworld_offset" type="vector2" unittype="distance" />
       <input name="realworld_scale" type="vector2" unittype="distance"/>
@@ -83,8 +86,9 @@
    </nodedef>
 
    <!-- Autodesk normal map -->
-   <nodedef name="ND_adsk_normal_map" node="normal_map" nodegroup="texture2d">
-      <parameter name="file" type="filename" namespace="adsk" />
+   <nodedef name="ND_adsk_normal_map" node="normal_map" nodegroup="texture2d"
+          version="1.0" isdefaultversion="true" namespace="adsk">                        
+      <parameter name="file" type="filename" />
       <!--  inputs with unit -->
       <input name="realworld_offset" type="vector2" unittype="distance" />
       <input name="realworld_scale" type="vector2" unittype="distance" />
@@ -99,8 +103,9 @@
    </nodedef>
 
    <!-- Autodesk height map -->
-   <nodedef name="ND_adsk_height_map" node="height_map" nodegroup="convolution2d">
-      <parameter name="file" type="filename" namespace="adsk"/>
+   <nodedef name="ND_adsk_height_map" node="height_map" nodegroup="convolution2d"
+          version="1.0" isdefaultversion="true" namespace="adsk">                        
+      <parameter name="file" type="filename" />
       <input name="realworld_offset" type="vector2" unittype="distance" />
       <input name="realworld_scale" type="vector2" unittype="distance" />
       <input name="uv_offset" type="vector2" value="0.0, 0.0" />

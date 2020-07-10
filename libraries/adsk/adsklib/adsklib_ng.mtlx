@@ -312,6 +312,7 @@
          <parameter name="file" type="filename" interfacename="file" />
          <parameter name="uaddressmode" type="string" value="periodic" />
          <parameter name="vaddressmode" type="string" value="periodic" />
+         <parameter name="default" type="vector3" value="0.5, 0.5, 1.0" />
          <input name="texcoord" type="vector2" nodename="a_place2d" />
       </image>
 

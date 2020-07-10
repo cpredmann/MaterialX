@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<materialx version="1.37" xmlns:xi="http://www.w3.org/2001/XInclude">
+
+   <!-- Autodeks color correction node -->
+   <nodedef name="ND_adsk_colorcorrect" node="colorcorrect" nodegroup="adjustment"
+          version="1.0" isdefaultversion="true" namespace="adsk">
+      <parameter name="color" type="color3" value="0.5, 0.5, 0.5" />
+      <parameter name="alpha" type="float" value="1" />
+      <input name="HSV" type="vector3" value="0, 1, 1" />
+      <input name="color_gain" type="color3" value="1, 1, 1" />
+      <input name="alpha_gain" type="float" value="1" />
+      <input name="color_offset" type="color3" value="0, 0, 0" />
+      <input name="alpha_offset" type="float" value="0" />
+      <input name="color_gamma" type="color3" value="1 1, 1" />
+      <input name="alpha_gamma" type="float" value="1" />
+      <input name="unpremultiply_input" type="boolean" value="false" />
+      <input name="premultiply_input" type="boolean" value="false" />
+      <parameter name="clamp_color" type="boolean" value="false" />
+      <input name="min_color" type="color3" value="0, 0, 0" />
+      <input name="max_color" type="color3" value="1, 1, 1" />
+      <parameter name="clamp_alpha" type="boolean" value="false" />
+      <input name="min_alpha" type="float" value="0" />
+      <input name="max_alpha" type="float" value="1" />
+      <output name="outColor" type="color3" />
+      <output name="outAlpha" type="float" />
+   </nodedef>
+
+   <!-- Autodesk bitmap (color3) -->
+   <nodedef name="ND_adsk_bitmap_color3" node="bitmap" nodegroup="texture2d">
+      <parameter name="file" type="filename" namespace="adsk"/>
+      <!--  inputs with unit -->
+      <input name="realworld_offset" type="vector2" unittype="distance" />
+      <input name="realworld_scale" type="vector2" unittype="distance"/>
+      <!--  inputs without unit -->
+      <input name="uv_offset" type="vector2" value="0.0, 0.0" />
+      <input name="uv_scale" type="vector2" value="1.0, 1.0" />
+      <!-- wAngle - rotation -->
+      <input name="rotation_angle" type="float" value="0" />
+      <!-- rgbamount -->
+      <input name="rgbamount" type="float" value="1.0" />
+      <!-- invert -->
+      <input name="invert" type="boolean" value="false" />
+
+      <output name="out" type="color3"/>
+   </nodedef>
+
+   <!-- Autodesk bitmap (float) -->
+   <nodedef name="ND_adsk_bitmap_float" node="bitmap" nodegroup="texture2d">
+      <parameter name="file" type="filename" namespace="adsk"/>
+      <!--  inputs with unit -->
+      <input name="realworld_offset" type="vector2" unittype="distance" />
+      <input name="realworld_scale" type="vector2" unittype="distance"/>
+      <!--  inputs without unit -->
+      <input name="uv_offset" type="vector2" value="0.0, 0.0" />
+      <input name="uv_scale" type="vector2" value="1.0, 1.0" />
+      <!-- wAngle - rotation -->
+      <input name="rotation_angle" type="float" value="0" />
+      <!-- rgbamount -->
+      <input name="rgbamount" type="float" value="1.0" />
+      <!-- invert -->
+      <input name="invert" type="boolean" value="false" />
+      <output name="out" type="float" />
+   </nodedef>
+
+   <nodedef name="ND_adsk_bitmap_remap_float" node="bitmap_remap" nodegroup="texture2d">
+      <parameter name="file" type="filename" namespace="adsk"/>
+      <!--  inputs with unit -->
+      <input name="realworld_offset" type="vector2" unittype="distance" />
+      <input name="realworld_scale" type="vector2" unittype="distance"/>
+      <!--  inputs without unit -->
+      <input name="uv_offset" type="vector2" value="0.0, 0.0" />
+      <input name="uv_scale" type="vector2" value="1.0, 1.0" />
+      <!-- wAngle - rotation -->
+      <input name="rotation_angle" type="float" value="0" />
+      <!-- rgbamount -->
+      <input name="rgbamount" type="float" value="1.0" />
+      <!-- invert -->
+      <input name="invert" type="boolean" value="false" />
+      <!-- remap -->
+      <input name="outlow"  type="float" value="0.0" />
+      <input name="outhigh" type="float" value="1.0" />
+      <output name="out" type="float" />
+   </nodedef>
+
+   <!-- Autodesk normal map -->
+   <nodedef name="ND_adsk_normal_map" node="normal_map" nodegroup="texture2d">
+      <parameter name="file" type="filename" namespace="adsk" />
+      <!--  inputs with unit -->
+      <input name="realworld_offset" type="vector2" unittype="distance" />
+      <input name="realworld_scale" type="vector2" unittype="distance" />
+      <!--  inputs without unit -->
+      <input name="uv_offset" type="vector2" value="0.0, 0.0" />
+      <input name="uv_scale" type="vector2" value="1.0, 1.0" />
+      <!-- wAngle - rotation -->
+      <input name="rotation_angle" type="float" value="0" unittype="angle" />
+      <!-- normal scale -->
+      <input name="normal_scale" type="float" value="1.0" />
+      <output name="out" type="vector3" />
+   </nodedef>
+
+   <!-- Autodesk height map -->
+   <nodedef name="ND_adsk_height_map" node="height_map" nodegroup="convolution2d">
+      <parameter name="file" type="filename" namespace="adsk"/>
+      <input name="realworld_offset" type="vector2" unittype="distance" />
+      <input name="realworld_scale" type="vector2" unittype="distance" />
+      <input name="uv_offset" type="vector2" value="0.0, 0.0" />
+      <input name="uv_scale" type="vector2" value="1.0, 1.0" />
+      <input name="rotation_angle" type="float" value="0" unittype="angle" />
+      <input name="depth" type="float" unittype="distance" />
+      <output name="out" type="vector3" />
+   </nodedef>
+
+</materialx>

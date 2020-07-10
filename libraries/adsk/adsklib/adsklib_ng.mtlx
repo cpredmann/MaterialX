@@ -1,0 +1,379 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<materialx version="1.37">
+
+   <!-- Autodesk color correct -->
+   <nodegraph name="NG_adsk_colorcorrect" nodedef="adsk:ND_adsk_colorcorrect" namespace="adsk">
+      <range name="AlphaClampAndGamma" type="float">
+         <input name="in" type="float" nodename="AlphaOffset" />
+         <input name="gamma" type="float" value="1" interfacename="alpha_gamma" />
+         <parameter name="doclamp" type="boolean" value="false" interfacename="clamp_alpha" />
+         <input name="inlow" type="float" value="0.0" interfacename="min_alpha" />
+         <input name="inhigh" type="float" value="1.0" interfacename="max_alpha" />
+         <input name="outlow" type="float" value="0.0" interfacename="min_alpha" />
+         <input name="outhigh" type="float" value="1.0" interfacename="max_alpha"/>
+      </range>
+      <multiply name="AlphaGain" type="float">
+         <input name="in1" type="float" nodename="extractAlphaForGain" />
+         <input name="in2" type="float" value="1.0" interfacename="alpha_gain" />
+      </multiply>
+      <add name="AlphaOffset" type="float">
+         <input name="in1" type="float" nodename="AlphaGain" />
+         <input name="in2" type="float" value="0.0" interfacename="alpha_offset" />
+      </add>
+      <range name="ColorClampAndGamma" type="color3">
+         <input name="in" type="color3" nodename="ColorOffset" />
+         <input name="gamma" type="color3" value="1, 1, 1" interfacename="color_gamma" />
+         <input name="inlow" type="color3" value="0.0, 0.0, 0.0" interfacename="min_color" />
+         <input name="inhigh" type="color3" value="1.0, 1.0, 1.0" interfacename="max_color" />
+         <input name="outlow" type="color3" value="0.0, 0.0, 0.0" interfacename="min_color" />
+         <input name="outhigh" type="color3" value="1.0, 1.0, 1.0" interfacename="max_color" />
+         <parameter name="doclamp" type="boolean" value="false" interfacename="clamp_color" />
+      </range>
+      <multiply name="ColorGain" type="color3">
+         <input name="in1" type="color3" nodename="HSV_adjust" />
+         <input name="in2" type="color3" value="1.0, 1.0, 1.0" interfacename="color_gain" />
+      </multiply>
+      <add name="ColorOffset" type="color3">
+         <input name="in1" type="color3" nodename="ColorGain" />
+         <input name="in2" type="color3" value="0.0, 0.0, 0.0" interfacename="color_offset" />
+      </add>
+      <combine2 name="CombineColorAlpha" type="color4">
+         <input name="in1" type="color3" nodename="ColorClampAndGamma" />
+         <input name="in2" type="float" nodename="AlphaClampAndGamma" />
+      </combine2>
+      <hsvadjust name="HSV_adjust" type="color3">
+         <input name="in" type="color3" nodename="extractColorForHsv" />
+         <input name="amount" type="vector3" value="0.0, 1.0, 1.0" interfacename="HSV" />
+      </hsvadjust>
+      <premult name="premultiplyColor" type="color4">
+         <input name="in" type="color4" nodename="combineInput" />
+      </premult>
+      <ifequal name="if_premultiply_condition" type="color4">
+         <input name="value2" type="boolean" value="true" />
+         <input name="in1" type="color4" nodename="premultiplyColor" />
+         <input name="in2" type="color4" nodename="combineInput" />
+         <input name="value1" type="boolean" value="false" interfacename="premultiply_input" />
+      </ifequal>
+      <unpremult name="unpremultiply" type="color4">
+         <input name="in" type="color4" nodename="CombineColorAlpha" />
+      </unpremult>
+      <ifequal name="if_unpremultiply_condition" type="color4">
+         <input name="value2" type="boolean" value="true" />
+         <input name="in1" type="color4" nodename="unpremultiply" />
+         <input name="in2" type="color4" nodename="CombineColorAlpha" />
+         <input name="value1" type="boolean" value="false" interfacename="unpremultiply_input" />
+      </ifequal>
+      <swizzle name="outputColor" type="color3">
+         <input name="in" type="color4" nodename="if_unpremultiply_condition" />
+         <parameter name="channels" type="string" value="rgb" />
+      </swizzle>
+      <swizzle name="outputAlpha" type="float">
+         <input name="in" type="color4" nodename="if_unpremultiply_condition" />
+         <parameter name="channels" type="string" value="a" />
+      </swizzle>
+      <swizzle name="extractColorForHsv" type="color3">
+         <input name="in" type="color4" nodename="if_premultiply_condition" />
+         <parameter name="channels" type="string" value="rgb" />
+      </swizzle>
+      <swizzle name="extractAlphaForGain" type="float">
+         <input name="in" type="color4" nodename="if_premultiply_condition" />
+         <parameter name="channels" type="string" value="a" />
+      </swizzle>
+      <constant name="inputColor" type="color3">
+         <parameter name="value" type="color3" value="0.5, 0.5, 0.5" interfacename="color" />
+      </constant>
+      <constant name="inputAlpha" type="float">
+         <parameter name="value" type="float" value="1" interfacename="alpha" />
+      </constant>
+      <combine2 name="combineInput" type="color4">
+         <input name="in1" type="color3" nodename="inputColor" />
+         <input name="in2" type="float" nodename="inputAlpha" />
+      </combine2>
+      <output name="outColor" type="color3" nodename="outputColor" />
+      <output name="outAlpha" type="float" nodename="outputAlpha" />
+   </nodegraph>
+
+   <!-- Autodesk bitmap (color3) -->
+   <nodegraph name="NG_adsk_bitmap_color3" nodedef="adsk:ND_adsk_bitmap_color3" namespace="adsk">
+      <multiply name="total_scale" type="vector2">
+         <input name="in1" type="vector2" interfacename="realworld_scale"/>
+         <input name="in2" type="vector2" value="1.0, 1.0" interfacename="uv_scale"/>
+      </multiply>
+      <!-- offset -->
+      <add name="total_offset" type="vector2">
+         <input name="in1" type="vector2" interfacename="realworld_offset"/>
+         <input name="in2" type="vector2" value="0.0, 0.0" interfacename="uv_offset"/>
+      </add>
+
+      <!-- rotation angle - positive angle rotate counterclockwise -->
+      <multiply name="rotation_angle_param" type="float">
+         <input name="in1" type="float" interfacename="rotation_angle"/>
+         <input name="in2" type="float" value="-1.0"/>
+      </multiply>
+
+      <!-- use placement node to transform uv -->
+      <texcoord name="texcoord1" type="vector2" />
+      <place2d name="a_place2d" type="vector2">
+         <input name="texcoord" type="vector2" nodename="texcoord1"/>
+         <input name="offset" type="vector2" nodename="total_offset" />
+         <input name="scale" type="vector2" nodename="total_scale" />
+         <parameter name="pivot" type="vector2" value="0.0, 0.0" />
+         <input name="rotate" type="float" value="0" nodename="rotation_angle_param" />
+      </place2d>
+      <image name="b_image" type="color3">
+         <parameter name="file" type="filename" interfacename="file" />
+         <parameter name="uaddressmode" type="string" value="periodic" />
+         <parameter name="vaddressmode" type="string" value="periodic" />
+         <input name="texcoord" type="vector2" nodename="a_place2d" />
+      </image>
+
+      <!-- apply rgbaamount -->
+      <multiply name="image_brightness" type="color3">
+         <input name="in1" type="color3" nodename="b_image" />
+         <input name="in2" type="float" interfacename="rgbamount" />
+      </multiply>
+
+      <!-- invert -->
+      <invert name="image_invert" type="color3">
+         <input name="in" type="color3" nodename="image_brightness" />
+      </invert>
+
+      <!-- apply invert if desired -->
+      <ifequal name="image_convert" type="color3">
+         <input name="in1" type="color3" nodename="image_invert" />
+         <input name="in2" type="color3" nodename="image_brightness" />
+         <input name="value1" type="boolean" interfacename="invert" />
+         <input name="value2" type="boolean" value="true" />
+      </ifequal>
+
+      <output name="out" type="color3" nodename="image_convert" />
+   </nodegraph>
+
+   <!-- Autodesk bitmap (float) -->
+   <nodegraph name="NG_adsk_bitmap_float" nodedef="adsk:ND_adsk_bitmap_float" namespace="adsk">
+      <multiply name="total_scale" type="vector2">
+         <input name="in1" type="vector2" interfacename="realworld_scale"/>
+         <input name="in2" type="vector2" value="1.0, 1.0" interfacename="uv_scale"/>
+      </multiply>
+      <!-- offset -->
+      <add name="total_offset" type="vector2">
+         <input name="in1" type="vector2" interfacename="realworld_offset"/>
+         <input name="in2" type="vector2" value="0.0, 0.0" interfacename="uv_offset"/>
+      </add>
+
+      <!-- rotation angle - positive angle rotate counterclockwise -->
+      <multiply name="rotation_angle_param" type="float">
+         <input name="in1" type="float" interfacename="rotation_angle"/>
+         <input name="in2" type="float" value="-1.0"/>
+      </multiply>
+
+      <!-- use placement node to transform uv -->
+      <texcoord name="texcoord1" type="vector2" />
+      <place2d name="a_place2d" type="vector2">
+         <input name="texcoord" type="vector2" nodename="texcoord1"/>
+         <input name="offset" type="vector2" nodename="total_offset" />
+         <input name="scale" type="vector2" nodename="total_scale" />
+         <parameter name="pivot" type="vector2" value="0.0, 0.0" />
+         <input name="rotate" type="float" value="0" nodename="rotation_angle_param" />
+      </place2d>
+      <image name="b_image" type="color3">
+         <parameter name="file" type="filename" interfacename="file" />
+         <parameter name="uaddressmode" type="string" value="periodic" />
+         <parameter name="vaddressmode" type="string" value="periodic" />
+         <input name="texcoord" type="vector2" nodename="a_place2d" />
+      </image>
+
+      <!-- apply rgbaamount -->
+      <multiply name="image_brightness" type="color3">
+         <input name="in1" type="color3" nodename="b_image" />
+         <input name="in2" type="float" interfacename="rgbamount" />
+      </multiply>
+
+      <!-- invert -->
+      <invert name="image_invert" type="color3">
+         <input name="in" type="color3" nodename="image_brightness" />
+      </invert>
+
+      <!-- apply invert if desired -->
+      <ifequal name="image_convert" type="color3">
+         <input name="in1" type="color3" nodename="image_invert" />
+         <input name="in2" type="color3" nodename="image_brightness" />
+         <input name="value1" type="boolean" interfacename="invert" />
+         <input name="value2" type="boolean" value="true" />
+      </ifequal>
+
+      <!-- extract channel -->
+      <extract name="extract1" type="float">
+         <input name="in" type="color3" nodename="image_convert" />
+         <parameter name="index" type="integer" value="1" />
+      </extract>
+
+      <output name="out" type="float" nodename="extract1" />
+   </nodegraph>
+
+   <!-- Autodesk bitmap remap -->
+   <nodegraph name="NG_adsk_bitmap_remap_float" nodedef="adsk:ND_adsk_bitmap_remap_float" namespace="adsk">
+      <multiply name="total_scale" type="vector2">
+         <input name="in1" type="vector2" interfacename="realworld_scale"/>
+         <input name="in2" type="vector2" value="1.0, 1.0" interfacename="uv_scale"/>
+      </multiply>
+      <!-- offset -->
+      <add name="total_offset" type="vector2">
+         <input name="in1" type="vector2" interfacename="realworld_offset"/>
+         <input name="in2" type="vector2" value="0.0, 0.0" interfacename="uv_offset"/>
+      </add>
+
+      <!-- rotation angle - positive angle rotate counterclockwise -->
+      <multiply name="rotation_angle_param" type="float">
+         <input name="in1" type="float" interfacename="rotation_angle"/>
+         <input name="in2" type="float" value="-1.0"/>
+      </multiply>
+
+      <!-- use placement node to transform uv -->
+      <texcoord name="texcoord1" type="vector2" />
+      <place2d name="a_place2d" type="vector2">
+         <input name="texcoord" type="vector2" nodename="texcoord1"/>
+         <input name="offset" type="vector2" nodename="total_offset" />
+         <input name="scale" type="vector2" nodename="total_scale" />
+         <parameter name="pivot" type="vector2" value="0.0, 0.0" />
+         <input name="rotate" type="float" value="0" nodename="rotation_angle_param" />
+      </place2d>
+      <image name="b_image" type="color3">
+         <parameter name="file" type="filename" interfacename="file" />
+         <parameter name="uaddressmode" type="string" value="periodic" />
+         <parameter name="vaddressmode" type="string" value="periodic" />
+         <input name="texcoord" type="vector2" nodename="a_place2d" />
+      </image>
+
+      <!-- apply rgbaamount -->
+      <multiply name="image_brightness" type="color3">
+         <input name="in1" type="color3" nodename="b_image" />
+         <input name="in2" type="float" interfacename="rgbamount" />
+      </multiply>
+
+      <!-- invert -->
+      <invert name="image_invert" type="color3">
+         <input name="in" type="color3" nodename="image_brightness" />
+      </invert>
+
+      <!-- apply invert if desired -->
+      <ifequal name="image_convert" type="color3">
+         <input name="in1" type="color3" nodename="image_invert" />
+         <input name="in2" type="color3" nodename="image_brightness" />
+         <input name="value1" type="boolean" interfacename="invert" />
+         <input name="value2" type="boolean" value="true" />
+      </ifequal>
+
+      <!-- extract channel -->
+      <extract name="extract1f" type="float">
+         <input name="in" type="color3" nodename="image_convert" />
+         <parameter name="index" type="integer" value="1" />
+      </extract>
+
+      <!-- remap output range -->
+      <remap name="value_remapped" type="float">
+         <input name="in" type="float" nodename="extract1f" />
+         <input name="outlow" type="float" interfacename="outlow" />
+         <input name="outhigh" type="float" interfacename="outhigh" />
+      </remap>
+      <output name="out" type="float" nodename="value_remapped" />
+   </nodegraph>
+
+   <!-- Autodesk normalmap -->
+   <nodegraph name="NG_adsk_normal_map" adsk:nodedef="ND_adsk_normal_map" namespace="adsk">
+
+      <!-- multiply unit converted realworldscale and additional scale-->
+      <multiply name="total_scale" type="vector2">
+         <input name="in1" type="vector2" interfacename="realworld_scale"/>
+         <input name="in2" type="vector2" value="1.0, 1.0" interfacename="uv_scale"/>
+      </multiply>
+      <!-- offset -->
+      <add name="total_offset" type="vector2">
+         <input name="in1" type="vector2" interfacename="realworld_offset"/>
+         <input name="in2" type="vector2" value="0.0, 0.0" interfacename="uv_offset"/>
+      </add>
+
+      <!-- rotation angle - positive angle rotate counterclockwise -->
+      <multiply name="rotation_angle_param" type="float">
+         <input name="in1" type="float" interfacename="rotation_angle"/>
+         <input name="in2" type="float" value="-1.0"/>
+      </multiply>
+
+      <!-- use placement node to transform uv -->
+      <texcoord name="texcoord1" type="vector2" />
+      <place2d name="a_place2d" type="vector2">
+         <input name="texcoord" type="vector2" nodename="texcoord1"/>
+         <input name="offset" type="vector2" nodename="total_offset" />
+         <input name="scale" type="vector2" nodename="total_scale" />
+         <parameter name="pivot" type="vector2" value="0.0, 0.0" />
+         <input name="rotate" type="float" value="0" nodename="rotation_angle_param" />
+      </place2d>
+      <image name="b_image" type="vector3" >
+         <parameter name="file" type="filename" interfacename="file" />
+         <parameter name="uaddressmode" type="string" value="periodic" />
+         <parameter name="vaddressmode" type="string" value="periodic" />
+         <input name="texcoord" type="vector2" nodename="a_place2d" />
+      </image>
+
+      <!-- Flip image -->
+      <multiply name="b_image_negate_y" type="vector3">
+         <input name="in1" type="vector3" nodename="b_image"/>
+         <input name="in2" type="vector3" value="1.0, -1.0, 1.0"/>
+      </multiply>
+      <add name="b_image_invert_y" type="vector3">
+         <input name="in1" type="vector3" value="0.0, 1.0, 0.0" />
+         <input name="in2" type="vector3" nodename="b_image_negate_y" />
+      </add>
+
+      <!-- use std::normal_map -->
+      <normalmap name="impl_normalmap" type="vector3">
+         <input name="in" type="vector3" nodename="b_image_invert_y" />
+         <input name="scale" type="float" interfacename="normal_scale" />
+         <parameter name="space" type="string" value="tangent" />
+      </normalmap>
+      <output name="out" type="vector3" nodename="impl_normalmap" />
+   </nodegraph>
+
+   <!-- Autodesk heightmap -->
+   <nodegraph name="NG_adsk_height_map" nodedef="adsk:ND_adsk_height_map" namespace="adsk">
+      <multiply name="total_scale" type="vector2">
+         <input name="in1" type="vector2" interfacename="realworld_scale"/>
+         <input name="in2" type="vector2" value="1.0, 1.0" interfacename="uv_scale"/>
+      </multiply>
+      <add name="total_offset" type="vector2">
+         <input name="in1" type="vector2" interfacename="realworld_offset"/>
+         <input name="in2" type="vector2" value="0.0, 0.0" interfacename="uv_offset"/>
+      </add>
+
+      <!-- rotation angle - positive angle rotate counterclockwise -->
+      <multiply name="rotation_angle_param" type="float">
+         <input name="in1" type="float" interfacename="rotation_angle"/>
+         <input name="in2" type="float" value="-1.0"/>
+      </multiply>
+
+      <texcoord name="texcoord1" type="vector2" />
+      <place2d name="a_place2d" type="vector2">
+         <input name="texcoord" type="vector2" nodename="texcoord1"/>
+         <input name="offset" type="vector2" nodename="total_offset" />
+         <input name="scale" type="vector2" nodename="total_scale" />
+         <parameter name="pivot" type="vector2" value="0.0, 0.0" />
+         <input name="rotate" type="float" value="0" nodename="rotation_angle_param" />
+      </place2d>
+      <image name="b_image" type="color3" >
+         <parameter name="file" type="filename" interfacename="file" />
+         <parameter name="uaddressmode" type="string" value="periodic" />
+         <parameter name="vaddressmode" type="string" value="periodic" />
+         <input name="texcoord" type="vector2" nodename="a_place2d" />
+      </image>
+      <extract name="extract1" type="float">
+         <input name="in" type="color3" nodename="b_image" />
+         <parameter name="index" type="integer" value="1" />
+      </extract>
+      <heighttonormal name="impl_heighttonormalmap" type="vector3">
+         <input name="in" type="float" nodename="extract1" />
+         <parameter name="scale" type="float" value="1.0" interfacename="depth" />
+      </heighttonormal>
+      <output name="out" type="vector3" nodename="impl_heighttonormalmap" />
+   </nodegraph>
+
+</materialx>

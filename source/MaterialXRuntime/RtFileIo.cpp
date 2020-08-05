@@ -1178,7 +1178,12 @@ namespace
         // elements but requires a spec change plus support in the runtime
         // for implementation associations.
         RtNodeDef nodedef(prim->hnd());
-        RtToken nodeDefName = prim->getName();
+        RtToken nodeDefName = nodedef.getName();
+        RtToken nodefDefNamespace = nodedef.getNamespace();
+        if (!nodefDefNamespace.str().empty())
+        {
+            nodeDefName = RtToken(nodefDefNamespace.str() + ":" + nodeDefName.str());
+        }
         RtSchemaPredicate<RtNodeGraph> filter;
         for (RtPrim child : stage->getRootPrim()->getChildren(filter))
         {

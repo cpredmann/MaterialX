@@ -143,7 +143,12 @@ void RtStage::restorePrim(const RtPath& parentPath, const RtPrim& prim)
 
 RtPrim RtStage::getImplementation(const RtNodeDef& definition) const
 {
-    const RtToken& nodeDefName = definition.getName();
+    RtToken nodeDefName = definition.getName();
+    RtToken nodefDefNamespace = definition.getNamespace();
+    if (!nodefDefNamespace.str().empty())
+    {
+        nodeDefName = RtToken(nodefDefNamespace.str() + ":" + nodeDefName.str());
+    }
 
     RtSchemaPredicate<RtNodeGraph> filter;
     for (RtPrim child : _cast(_ptr)->getRootPrim()->getChildren(filter))
@@ -171,13 +176,28 @@ RtPrim RtStage::createNodeDef(RtNodeGraph& nodeGraph,
                               bool isDefaultVersion,
                               const RtToken& nodeGroup)
 {
-    // Must have a nodedef name and a node name
+  // Must have a nodedef name and a node name
     if (nodeDefName == EMPTY_TOKEN ||
         nodeName == EMPTY_TOKEN)
     {
         throw ExceptionRuntimeError("Cannot create nodedef with definition name'" + nodeDefName.str() 
                                     + "', and node name: '" + nodeName.str() + "'");
     }
+    
+    RtToken qualifiedNodeDefName;
+
+    // If the nodegraph has a namespace prepend it to the nodedef name
+    std::string nodeGraphNameSpace = nodeGraph.getNamespace().str();
+
+    if (!nodeGraphNameSpace.empty())
+    {
+        qualifiedNodeDefName = RtToken(nodeGraphNameSpace + ":" + nodeDefName.str());
+    }
+    else
+    {
+        qualifiedNodeDefName = nodeDefName;
+    }    
+
 
     PvtStage* stage = _cast(_ptr);
     PvtPrim* prim = stage->createPrim(stage->getPath(), nodeDefName, RtNodeDef::typeName());
@@ -185,7 +205,13 @@ RtPrim RtStage::createNodeDef(RtNodeGraph& nodeGraph,
     RtNodeDef nodedef(prim->hnd());
     if (nodedef.isMasterPrim())
     {
-        throw ExceptionRuntimeError("Definition to create already exists '" + nodeDefName.str() + "'");
+        throw ExceptionRuntimeError("Definition to create already exists '" + qualifiedNodeDefName.str() + "'");
+    }
+
+    // Set matching namespace if any
+    if (!nodeGraphNameSpace.empty())
+    {
+        nodedef.setNamespace(RtToken(nodeGraphNameSpace));
     }
 
     // Set node, version and optional node group
@@ -250,8 +276,9 @@ RtPrim RtStage::createNodeDef(RtNodeGraph& nodeGraph,
         }
     }
 
-    // Set the definition on the nodegraph
-    nodeGraph.setDefinition(nodeDefName);
+    // Set the definition on the nodegraph. Make sure
+    // to use the qualified name in case there is any namespace.
+    nodeGraph.setDefinition(qualifiedNodeDefName);
 
     // Add definiion
     nodedef.registerMasterPrim();

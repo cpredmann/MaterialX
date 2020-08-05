@@ -19,6 +19,7 @@ namespace
     static const RtToken NODEGRAPH1("nodegraph1");
     static const RtToken NODEDEF("nodedef");
     static const RtToken VERSION("version");
+    static const RtToken NAMESPACE("namespace");
 }
 
 DEFINE_TYPED_SCHEMA(RtNodeGraph, "node:nodegraph");
@@ -157,6 +158,18 @@ const RtToken& RtNodeGraph::getDefinition() const
 void RtNodeGraph::setDefinition(const RtToken& value)
 {
     RtTypedValue* v = prim()->addMetadata(NODEDEF, RtType::TOKEN);
+    v->getValue().asToken() = value;
+}
+
+const RtToken& RtNodeGraph::getNamespace() const
+{
+    RtTypedValue* v = prim()->getMetadata(NAMESPACE);
+    return v ? v->getValue().asToken() : EMPTY_TOKEN;
+}
+
+void RtNodeGraph::setNamespace(const RtToken& value)
+{
+    RtTypedValue* v = prim()->addMetadata(NAMESPACE, RtType::TOKEN);
     v->getValue().asToken() = value;
 }
 

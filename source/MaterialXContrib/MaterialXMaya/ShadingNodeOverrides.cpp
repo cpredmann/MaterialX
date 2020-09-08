@@ -34,9 +34,9 @@ const MString
 namespace
 {
 // This should be a shared utility
-MStatus bindFileTexture(MHWRender::MShaderInstance& shaderInstance, 
+MStatus bindFileTexture(MHWRender::MShaderInstance& shaderInstance,
                         const std::string& parameterName,
-                        const mx::FileSearchPath& searchPath, 
+                        const mx::FileSearchPath& searchPath,
                         const std::string& fileName,
                         const MHWRender::MSamplerStateDesc& samplerDescription,
                         MHWRender::MTextureDescription& textureDescription,
@@ -272,7 +272,7 @@ void ShadingNodeOverride<BASE>::updateShader(MHWRender::MShaderInstance& shaderI
     // Set up image file name search path.
     mx::FilePath documentPath(node->getDocumentFilePath().asChar());
     documentPath = documentPath.getParentPath();
-    mx::FileSearchPath imageSearchPath = Plugin::instance().getResourceSearchPath(); 
+    mx::FileSearchPath imageSearchPath = Plugin::instance().getResourceSearchPath();
     imageSearchPath.prepend(documentPath);
 
     bindEnvironmentLighting(shaderInstance, parameterList, imageSearchPath, *node);
@@ -280,7 +280,7 @@ void ShadingNodeOverride<BASE>::updateShader(MHWRender::MShaderInstance& shaderI
     mx::DocumentPtr document = ogsFragment->getDocument();
 
     // Look for any udimset on the document to use for texture binding.
-    mx::ValuePtr udimSetValue = document->getGeomAttrValue("udimset");
+    mx::ValuePtr udimSetValue = document->getGeomPropValue("udimset");
     const mx::StringVec* udimIdentifiers = nullptr;
     if (udimSetValue && udimSetValue->isA<mx::StringVec>())
     {
@@ -297,7 +297,7 @@ void ShadingNodeOverride<BASE>::updateShader(MHWRender::MShaderInstance& shaderI
     };
 
     const std::vector<MHWRender::MSamplerState::TextureFilter> filterModes
-    { 
+    {
         MHWRender::MSamplerState::kMinMagMipPoint,
         MHWRender::MSamplerState::kMinMagMipLinear,
         MHWRender::MSamplerState::kAnisotropic

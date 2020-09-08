@@ -5,6 +5,7 @@
 /// Maya plugin definition.
 
 #include <MaterialXFormat/File.h>
+#include <MaterialXFormat/Util.h>
 #include <MaterialXCore/Document.h>
 
 #include <maya/MPxNode.h>

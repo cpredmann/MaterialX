@@ -43,21 +43,17 @@ mx::DocumentPtr loadDocument(const std::string& materialXDocumentPath,
         throw mx::Exception("Failed to create a MaterialX document");
     }
 
-    // Import libraries.
-    mx::CopyOptions copyOptions;
-    copyOptions.skipConflictingElements = true;
-    document->importLibrary(libraryDocument, &copyOptions);
+    document->importLibrary(libraryDocument);
 
     // Read document contents from disk
     mx::XmlReadOptions readOptions;
-    readOptions.skipConflictingElements = true;
     mx::readFromXmlFile(document, materialXDocumentPath, mx::EMPTY_STRING, &readOptions);
 
     return document;
 }
 
-mx::TypedElementPtr getRenderableElement(mx::DocumentPtr document, 
-                                         const std::vector<mx::TypedElementPtr>& renderableElements, 
+mx::TypedElementPtr getRenderableElement(mx::DocumentPtr document,
+                                         const std::vector<mx::TypedElementPtr>& renderableElements,
                                          const std::string& desiredElementPath)
 {
     if (!desiredElementPath.empty())
@@ -79,7 +75,7 @@ mx::TypedElementPtr getRenderableElement(mx::DocumentPtr document,
         {
             throw mx::Exception("The specified element " + desiredElementPath + "is not renderable");
         }
-        
+
         return element->asA<mx::TypedElement>();
     }
     return nullptr;

@@ -153,7 +153,7 @@ void Plugin::loadLibraries()
     }
 
     mx::loadLibraries(
-        mx::StringVec(uniqueLibraryNames.begin(), uniqueLibraryNames.end()),
+        mx::FilePathVec(uniqueLibraryNames.begin(), uniqueLibraryNames.end()),
         _librarySearchPath,
         _libraryDocument
     );
